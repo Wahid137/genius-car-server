@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,29 +23,12 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         const servicesCollection = client.db("geniusCarService").collection("servicesList");
-        const orderCollection = client.db("geniusCarService").collection("orders")
 
-        //get all uploaded services
         app.get('/services', async (req, res) => {
             const query = {}
             const cursor = servicesCollection.find(query)
             const services = await cursor.toArray()
             res.send(services)
-        })
-
-        //get specific service
-        app.get('/services/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-            const services = await servicesCollection.findOne(query)
-            res.send(services)
-        })
-
-        //place order
-        app.post('/orders', async (req, res) => {
-            const order = req.body;
-            const result = await orderCollection.insertOne(order)
-            res.send(result)
         })
 
 

@@ -24,7 +24,6 @@ async function run() {
     try {
         const servicesCollection = client.db("geniusCarService").collection("servicesList");
         const orderCollection = client.db("geniusCarService").collection("orders")
-
         //get all uploaded services
         app.get('/services', async (req, res) => {
             const query = {}
