@@ -29,10 +29,10 @@ function verifyJWT(req, res, next) {
     const token = authHeader.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
         if (err) {
-            return res.status(403).send({ message: 'Forbidden access' })
+            return res.status(403).send({ message: 'unauthorized access' })
         }
         req.decoded = decoded;
-        next();
+        next()
     })
 }
 
@@ -65,7 +65,7 @@ async function run() {
         })
 
         //place order
-        app.post('/orders', verifyJWT, async (req, res) => {
+        app.post('/orders', async (req, res) => {
             const order = req.body;
             const result = await orderCollection.insertOne(order)
             res.send(result)
@@ -73,11 +73,7 @@ async function run() {
 
         //get orders for specific email query
 
-        app.get('/orders', verifyJWT, async (req, res) => {
-            const decoded = req.decoded
-            if (decoded.email !== req.query.email) {
-                res.status(403).send({ message: 'unauthorized access' })
-            }
+        app.get('/orders', async (req, res) => {
             let query = {}
             if (req.query.email) {
                 query = {
@@ -91,7 +87,7 @@ async function run() {
 
         //delete order
 
-        app.delete('/orders/:id', verifyJWT, async (req, res) => {
+        app.delete('/orders/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await orderCollection.deleteOne(query)
@@ -100,7 +96,7 @@ async function run() {
 
         //update status
 
-        app.patch('/orders/:id', verifyJWT, async (req, res) => {
+        app.patch('/orders/:id', async (req, res) => {
             const id = req.params.id;
             const status = req.body.status;
             const query = { _id: new ObjectId(id) }
